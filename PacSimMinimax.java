@@ -15,6 +15,9 @@ import pacsim.PacSim;
 public class PacSimMinimax implements PacAction
 {
 
+    // game plan: create game tree with depth as a variable, call evaluation function, 
+    // and determine which move will be optimal, then udpate face
+
     public double sigmoid(int x)
     {
         return (1.0 / (1.0 + Math.exp(-1.0 * (double) x)));
