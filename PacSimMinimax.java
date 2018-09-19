@@ -1,3 +1,9 @@
+import java.awt.Point;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Collections;
+import java.util.List;
+
 import pacsim.BFSPath;
 import pacsim.PacAction;
 import pacsim.PacCell;
@@ -8,6 +14,32 @@ import pacsim.PacSim;
 
 public class PacSimMinimax implements PacAction
 {
+
+    public int evaluation(PacCell[][] state)
+    {
+        int score;
+        int distToGhost = Integer.MAX_VALUE;
+
+        PacmanCell pc = PacUtils.findPacman(state);
+        List<Point> allGhosts = PacUtils.findGhosts(state);
+        Point nearestGhost;
+
+        for(int i = 0; i < allGhosts.size(); i++)
+        {
+            int currDist = PacUtils.manhattanDistance(allGhosts.get(i), pc.getLoc());
+
+            if (currDist < distToGhost)
+            {
+                distToGhost = currDist;
+                nearestGhost = allGhosts.get(i);
+            }
+        }
+
+        score = 0.5 * distToGhost;
+
+        return score;
+    }
+
     public PacSimMinimax(int depth, String fname, int te, int gran, int max)
     {
         PacSim sim = new PacSim(fname, te, gran, max);
@@ -50,7 +82,7 @@ public class PacSimMinimax implements PacAction
     @Override
     public void init()
     {
-
+        continue;
     }
 
     @Override
@@ -58,6 +90,7 @@ public class PacSimMinimax implements PacAction
     {
         PacCell[][] grid = (PacCell[][]) state;
         PacFace newFace = null;
+        PacmanCell pc = PacUtils.findPacman(grid);
 
         // minimax here
         
