@@ -15,6 +15,11 @@ import pacsim.PacSim;
 public class PacSimMinimax implements PacAction
 {
 
+    public double sigmoid(int x)
+    {
+        return (1.0 / (1.0 + Math.exp(-1.0 * (double) x)));
+    }
+
     // consider adding: remaining food count, distance to scared ghost, 
     // current number of moves (maybe), score so far
     public int evaluation(PacCell[][] state)
@@ -23,6 +28,8 @@ public class PacSimMinimax implements PacAction
         int distToGhost = Integer.MAX_VALUE;
 
         PacmanCell pc = PacUtils.findPacman(state);
+
+        // Pacman should be maximize distance from ghosts
         List<Point> allGhosts = PacUtils.findGhosts(state);
         Point nearestGhost;
 
@@ -37,7 +44,8 @@ public class PacSimMinimax implements PacAction
             }
         }
 
-        score = distToGhost;
+        // remember to add other sigmoided costs
+        score = sigmoid(distToGhost);
 
         return score;
     }
