@@ -15,6 +15,8 @@ import pacsim.PacSim;
 public class PacSimMinimax implements PacAction
 {
 
+    // consider adding: remaining food count, distance to scared ghost, 
+    // current number of moves (maybe), score so far
     public int evaluation(PacCell[][] state)
     {
         int score;
@@ -35,7 +37,7 @@ public class PacSimMinimax implements PacAction
             }
         }
 
-        score = 0.5 * distToGhost;
+        score = distToGhost;
 
         return score;
     }
@@ -93,6 +95,8 @@ public class PacSimMinimax implements PacAction
         PacmanCell pc = PacUtils.findPacman(grid);
 
         // minimax here
+
+        // TODO: move ghosts (?), move Pacman
         
         return newFace;
     }
