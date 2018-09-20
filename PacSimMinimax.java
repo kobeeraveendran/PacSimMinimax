@@ -4,6 +4,8 @@ import java.util.Comparator;
 import java.util.Collections;
 import java.util.List;
 
+import com.sun.corba.se.spi.orbutil.fsm.State;
+
 import pacsim.BFSPath;
 import pacsim.PacAction;
 import pacsim.PacCell;
@@ -29,6 +31,7 @@ public class PacSimMinimax implements PacAction
     {
         int score;
         int distToGhost = Integer.MAX_VALUE;
+        int remainingFood = PacUtils.findFood(state).size();
 
         PacmanCell pc = PacUtils.findPacman(state);
 
@@ -48,7 +51,7 @@ public class PacSimMinimax implements PacAction
         }
 
         // remember to add other sigmoided costs
-        score = sigmoid(distToGhost);
+        score = sigmoid(distToGhost) + (1.0 / remainingFood);
 
         return score;
     }
@@ -95,7 +98,8 @@ public class PacSimMinimax implements PacAction
     @Override
     public void init()
     {
-        
+        int numMoves = 0;
+        //int numFood = PacUtils.findFood((PacCell[][]) state).size();
     }
 
     @Override
@@ -108,6 +112,8 @@ public class PacSimMinimax implements PacAction
         // minimax here
 
         // TODO: move ghosts (?), move Pacman
+
+        numMoves++;
         
         return newFace;
     }
