@@ -95,7 +95,7 @@ public class PacSimMinimax implements PacAction
     @Override
     public void init()
     {
-        continue;
+        
     }
 
     @Override
