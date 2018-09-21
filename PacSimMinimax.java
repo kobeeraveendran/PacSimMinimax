@@ -4,8 +4,6 @@ import java.util.Comparator;
 import java.util.Collections;
 import java.util.List;
 
-import com.sun.corba.se.spi.orbutil.fsm.State;
-
 import pacsim.BFSPath;
 import pacsim.PacAction;
 import pacsim.PacCell;
@@ -57,9 +55,9 @@ public class PacSimMinimax implements PacAction
 
     // consider adding: remaining food count, distance to scared ghost, 
     // current number of moves (maybe), score so far
-    public int evaluation(PacCell[][] state)
+    public double evaluation(PacCell[][] state)
     {
-        int leafScore;
+        double leafScore;
         int ghostDist = Integer.MAX_VALUE;
         boardManhattanDistance = Math.max(state.length, state[0].length);
 
@@ -67,14 +65,14 @@ public class PacSimMinimax implements PacAction
 
         // Pacman should be maximize distance from ghosts...
         List<Point> allGhosts = PacUtils.findGhosts(state);
-        Point nearestGhost;
-        Point otherGhost;
+        Point nearestGhost = null;
+        Point otherGhost = null;
 
         for(int i = 0; i < allGhosts.size(); i++)
         {
             int currDist = PacUtils.manhattanDistance(allGhosts.get(i), pc.getLoc());
 
-            if (currDist < distToGhost)
+            if (currDist < ghostDist)
             {
                 ghostDist = currDist;
                 otherGhost = nearestGhost;
@@ -137,7 +135,7 @@ public class PacSimMinimax implements PacAction
     public void init()
     {
         numMoves = 0;
-        numFood = PacUtils.findFood((PacCell[][]) state).size();
+        numFood = 0;
     }
 
     @Override
@@ -146,6 +144,7 @@ public class PacSimMinimax implements PacAction
         PacCell[][] grid = (PacCell[][]) state;
         PacFace newFace = null;
         PacmanCell pc = PacUtils.findPacman(grid);
+        numFood = Math.max(numFood, PacUtils.findFood((PacCell[][]) state).size());
 
         // minimax here
 
