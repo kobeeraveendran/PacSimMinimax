@@ -17,6 +17,10 @@ import pacsim.PacSim;
 public class PacSimMinimax implements PacAction
 {
 
+    int numFood;
+    int numMoves;
+    int boardManhattanDistance;
+
     // game plan: create game tree with depth as a variable, call evaluation function, 
     // and determine which move will be optimal, then udpate face
 
@@ -25,19 +29,47 @@ public class PacSimMinimax implements PacAction
         return (1.0 / (1.0 + Math.exp(-1.0 * (double) x)));
     }
 
+    public double weightFactor(int current, int total, String criteria)
+    {
+        if (criteria.equals("ghostDist"))
+        {
+            return -5.0 / ((double) current / total);
+        }
+        
+        else if (criteria.equals("remainingFood"))
+        {
+            return 7.5 * ((double) total / current);
+        }
+
+        else if (criteria.equals("foodDist"))
+        {
+            // (total in this case will be the amount of remaining food)
+            // helps slightly push Pacman to seek food if there is not much food left, 
+            // while forcing him to go for any nearby food if there is plenty
+            return (total / 1.5) / current;
+        }
+
+        else
+        {
+            return 0.0;
+        }
+    }
+
     // consider adding: remaining food count, distance to scared ghost, 
     // current number of moves (maybe), score so far
     public int evaluation(PacCell[][] state)
     {
-        int score;
-        int distToGhost = Integer.MAX_VALUE;
+        int leafScore;
+        int ghostDist = Integer.MAX_VALUE;
         int remainingFood = PacUtils.findFood(state).size();
+        boardManhattanDistance = Math.max(state.length, state[0].length);
 
         PacmanCell pc = PacUtils.findPacman(state);
 
-        // Pacman should be maximize distance from ghosts
+        // Pacman should be maximize distance from ghosts...
         List<Point> allGhosts = PacUtils.findGhosts(state);
         Point nearestGhost;
+        Point otherGhost;
 
         for(int i = 0; i < allGhosts.size(); i++)
         {
@@ -45,15 +77,20 @@ public class PacSimMinimax implements PacAction
 
             if (currDist < distToGhost)
             {
-                distToGhost = currDist;
+                ghostDist = currDist;
+                otherGhost = nearestGhost;
                 nearestGhost = allGhosts.get(i);
             }
         }
 
-        // remember to add other sigmoided costs
-        score = sigmoid(distToGhost) + (1.0 / remainingFood);
+        // ... while minimizing the distance to food (and minimizing the number of food cells left)
+        Point nearestGoody = PacUtils.nearestGoody(pc.getLoc(), state);
 
-        return score;
+
+        // remember to add other sigmoided costs
+        leafScore = weightFactor(ghostDist, );
+
+        return leafScore;
     }
 
     public PacSimMinimax(int depth, String fname, int te, int gran, int max)
@@ -98,8 +135,8 @@ public class PacSimMinimax implements PacAction
     @Override
     public void init()
     {
-        int numMoves = 0;
-        //int numFood = PacUtils.findFood((PacCell[][]) state).size();
+        numMoves = 0;
+        numFood = PacUtils.findFood((PacCell[][]) state).size();
     }
 
     @Override
