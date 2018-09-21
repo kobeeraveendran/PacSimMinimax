@@ -61,7 +61,6 @@ public class PacSimMinimax implements PacAction
     {
         int leafScore;
         int ghostDist = Integer.MAX_VALUE;
-        int remainingFood = PacUtils.findFood(state).size();
         boardManhattanDistance = Math.max(state.length, state[0].length);
 
         PacmanCell pc = PacUtils.findPacman(state);
@@ -85,10 +84,12 @@ public class PacSimMinimax implements PacAction
 
         // ... while minimizing the distance to food (and minimizing the number of food cells left)
         Point nearestGoody = PacUtils.nearestGoody(pc.getLoc(), state);
+        int foodDist = PacUtils.manhattanDistance(pc.getLoc(), nearestGoody);
+        int remainingFood = PacUtils.findFood(state).size();
 
 
         // remember to add other sigmoided costs
-        leafScore = weightFactor(ghostDist, );
+        leafScore = weightFactor(ghostDist, boardManhattanDistance, "ghostDist") + weightFactor(foodDist, remainingFood, "foodDist") + weightFactor(remainingFood, numFood, "remainingFood");
 
         return leafScore;
     }
