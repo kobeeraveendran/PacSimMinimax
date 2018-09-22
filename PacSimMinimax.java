@@ -19,6 +19,19 @@ public class PacSimMinimax implements PacAction
     int numMoves;
     int boardManhattanDistance;
 
+
+    /* EXPLANATION OF EVALUATION FUNCTION
+     * This minimax function takes into account 3 factors at every 
+     * Pacman move: the distance to the nearest ghost (also uses distance to the
+     * other ghost to some extent), how much food is remaining on the board, and 
+     * the distance to the nearest food around Pacman.
+     * 
+     * I chose to use the distance to the nearest ghost as a deterrent for Pacman, 
+     * forcing him to avoid making moves that put him in danger, since survival is 
+     * something he can't afford to slack on (otherwise the game ends). 
+     */
+
+
     // game plan: create game tree with depth as a variable, call evaluation function, 
     // and determine which move will be optimal, then udpate face
 
@@ -31,7 +44,7 @@ public class PacSimMinimax implements PacAction
     {
         if (criteria.equals("ghostDist"))
         {
-            return -5.0 / ((double) current / total);
+            return -10.0 / ((double) current / total);
         }
         
         else if (criteria.equals("remainingFood"))
@@ -147,6 +160,8 @@ public class PacSimMinimax implements PacAction
         numFood = Math.max(numFood, PacUtils.findFood((PacCell[][]) state).size());
 
         // minimax here
+
+
 
         // TODO: move ghosts (?), move Pacman
 
