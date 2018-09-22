@@ -28,7 +28,26 @@ public class PacSimMinimax implements PacAction
      * 
      * I chose to use the distance to the nearest ghost as a deterrent for Pacman, 
      * forcing him to avoid making moves that put him in danger, since survival is 
-     * something he can't afford to slack on (otherwise the game ends). 
+     * something he can't afford to slack on (otherwise the game ends). This is solely why 
+     * the absolute value of the weight I gave to the ghost distance (-10) is higher than 
+     * the absolute values of any of the other metrics.
+     * 
+     * I also chose to use the amount of remaining food to motivate Pacman to look to end the game, 
+     * so that he wouldn't be stuck making useless moves if he's not in immediate danger and only a few
+     * pellets remain. This is why the weight for it is still somewhat high for a positive weight. The more 
+     * food he collects, the lower the value of total/current will be, which is how he'll be 
+     * incentivized to end the game. 
+     * 
+     * Tying into this, my third factor is the distance to the nearest food cell. I chose this because
+     * I want Pacman to be "pushed" toward nearby food dots if the situation allows for it. I gave it 
+     * a somewhat small weight to avoid forcing him to prioritize food over his own safety. However, 
+     * that weight scales with the distance to the food. If the distance is relatively small, 
+     * he will be more pressured to go for the food (i.e. if it's in an adjacent cell to his own), 
+     * but if the food is extremely far, the resulting weight will be small, which allows him the 
+     * other factors to exert more influence. In the case that there's only a few food dots remaining, 
+     * but all are far, the second criteria will end up taking over, pushing him toward the food dots 
+     * anyway.
+     * 
      */
 
 
