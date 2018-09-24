@@ -20,10 +20,11 @@ public class PacSimMinimax implements PacAction
     int boardManhattanDistance;
 
 
-    /* EXPLANATION OF EVALUATION FUNCTION
+    /*             ******************** EXPLANATION OF EVALUATION FUNCTION ********************
+     *
      * This minimax function takes into account 3 factors at every 
-     * Pacman move: the distance to the nearest ghost (also uses distance to the
-     * other ghost to some extent), how much food is remaining on the board, and 
+     * Pacman move: the distance to the nearest ghost (may consider using distance to the
+     * farther ghost to some extent), how much food is remaining on the board, and 
      * the distance to the nearest food around Pacman.
      * 
      * I chose to use the distance to the nearest ghost as a deterrent for Pacman, 
@@ -168,6 +169,16 @@ public class PacSimMinimax implements PacAction
     {
         numMoves = 0;
         numFood = 0;
+    }
+
+    public PacFace minimax()
+    {
+        PacFace bestFace = null;
+
+        // minimax structure here
+        
+
+        return bestFace;
     }
 
     @Override
