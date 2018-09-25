@@ -271,10 +271,31 @@ public class PacSimMinimax implements PacAction
         return node;
     }
 
+    public Node stateTreeInit(Node root, int depth)
+    {
+        if (depth == 0)
+        {
+            root.addChild(new Node(evaluation(tempState), tempState));
+        }
+
+        else
+        {
+            if (depth % 2 == 0)
+            {
+                root.addChild(stateTreeInit(new Node(Dobule.MAX_VALUE, tempState), depth - 1));
+            }
+            else
+            {
+                root.addChild(stateTreeInit(new Node(Double.MIN_VALUE, tempState), depth - 1));
+            }
+        }
+    }
+
     @Override
     public PacFace action(Object state)
     {
         PacCell[][] grid = (PacCell[][]) state;
+        PacCell[][] tempState;
         PacFace newFace = null;
         PacmanCell pc = PacUtils.findPacman(grid);
         PacmanCell original = PacUtils.findPacman(grid);
@@ -283,9 +304,14 @@ public class PacSimMinimax implements PacAction
         // avail directions: use paccell.instanceof(wallcell)
 
         // generate minimax search tree with depth d
-        Node root = new Node(0, grid);
+        Node root = new Node(Double.MIN_VALUE, grid);
 
         // switch to recursive initialization..?
+
+        for (int i = 1; i < initDepth; i++)
+        {
+            
+        }
 
         for (int i = 0; i < initDepth; i++)
         {
@@ -308,7 +334,7 @@ public class PacSimMinimax implements PacAction
                         if (depth % 2 == 0)
                         {
                             // initialize value to Double.MIN_VALUE
-                            root.addChild(Double.MIN_VALUE, state);
+                            root.addChild(new Node(Double.MIN_VALUE, state));
                         }
                     }
                 }
