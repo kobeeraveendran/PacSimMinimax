@@ -67,6 +67,7 @@ public class PacSimMinimax implements PacAction
     int numFood;
     int numMoves;
     int boardManhattanDistance;
+    int initDepth;
 
 
     /*             ******************** EXPLANATION OF EVALUATION FUNCTION ********************
@@ -278,9 +279,27 @@ public class PacSimMinimax implements PacAction
         PacmanCell pc = PacUtils.findPacman(grid);
         numFood = Math.max(numFood, PacUtils.findFood((PacCell[][]) state).size());
 
-        
+        // generate minimax search tree with depth d
+        Node root = new Node(0, grid);
+        for (int i = 0; i < initDepth; i++)
+        {
+            // to add: loop through directions and add valid moves
+            if (i == initDepth)
+            {
+                // replace with that node's state
+                Node newNode = new Node(evaluation(state), state);
+            }
+            else
+            {
+                // replace with that node's state
+                Node newNode = new Node(0, grid);
+            }
+            Node newNode = new Node(0, grid);
 
-        // TODO: move ghosts (?), move Pacman
+
+        }
+
+        // once optimal state is found, use direction() to create a pacface
 
         numMoves++;
         
