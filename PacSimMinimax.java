@@ -16,12 +16,14 @@ import pacsim.PacSim;
 public class Node
 {
     private ArrayList<Node> children = null;
+    private PacCell[][] state;
     private int value;
     private String type;
 
-    public Node(int value, String type)
+    public Node(int value, PacCell[][] state, String type)
     {
         this.children = new ArrayList<>();
+        this.state = state;
         this.value = value;
         this.type = type;
     }
@@ -29,6 +31,16 @@ public class Node
     public void addChild(Node child)
     {
         children.add(child);
+    }
+
+    public ArrayList<Node> getChildren()
+    {
+        return this.children;
+    }
+
+    public PacCell[][] getState()
+    {
+        return this.state;
     }
 }
 
@@ -191,12 +203,16 @@ public class PacSimMinimax implements PacAction
         numFood = 0;
     }
 
-    public PacFace minimax(PacCell[][] state, int depth)
+    public PacFace minimax(Node node, int depth)
     {
-        PacFace bestFace = null;
+        PacFace bestFace;
 
         // minimax structure here
-        
+        if (depth == 0 || node.getChildren() == null)
+        {
+            // consider changing this function to be called in each node instead
+            return evaluation(node.getState());
+        }
 
         return bestFace;
     }
