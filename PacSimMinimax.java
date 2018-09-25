@@ -17,15 +17,15 @@ public class Node
 {
     private ArrayList<Node> children = null;
     private PacCell[][] state;
-    private int value;
-    private String type;
+    private double value;
+    //private String type;
 
-    public Node(int value, PacCell[][] state, String type)
+    public Node(double value, PacCell[][] state)
     {
         this.children = new ArrayList<>();
         this.state = state;
         this.value = value;
-        this.type = type;
+        //this.type = type;
     }
 
     public void addChild(Node child)
@@ -43,9 +43,14 @@ public class Node
         return this.state;
     }
 
-    public String getType()
+    public double getValue()
     {
-        return this.type;
+        return this.value;
+    }
+
+    public void setValue(double value)
+    {
+        this.value = value;
     }
 }
 
@@ -208,26 +213,22 @@ public class PacSimMinimax implements PacAction
         numFood = 0;
     }
 
-    public PacFace minimax(Node node, int depth)
+    public Node minimax(Node node, int depth, boolean maximizingPlayer)
     {
-        PacFace bestFace;
-
         // minimax structure here
         if (depth == 0 || node.getChildren() == null)
         {
             // consider changing this function to be called in each node instead
-            return evaluation(node.getState());
+            return node;
         }
 
-        if (node.getType().equals("pacman"))
+        if (maximizingPlayer)
         {
-            int value = Integer.MAX_VALUE;
+            Node maxNode = new Node(Double.MIN_VALUE, null);
 
-            for (Node child:)
-
-            for (int i = 0; i < node.getChildren().size(); i++)
+            for (Node child : node.getChildren())
             {
-                value = Math.max(value, minimax(node.getChildren().get(i), depth - 1, false));
+                maxNode.setValue(Math.max(value, minimax(child, depth - 1, false).getValue()));
             }
 
             return value;
@@ -235,15 +236,22 @@ public class PacSimMinimax implements PacAction
 
         else
         {
-            int value = Integer.MAX_VALUE;
+            Node minNode = new Node(Double.MAX_VALUE, null);
 
             for (Node child : node.getChildren())
             {
-                value = Math.min(value, minimax(child, depth - 1, true));
+                minNode = minimax(child, depth - 1, true);
+
+                if (minNode.getValue() > value)
+                {
+                    
+                }
+                minNode.setValue(Math.max(minNode.getValue(), minimax(child, depth - 1, true).getValue()));
+                
             }
         }
 
-        return bestFace;
+        return node;
     }
 
     @Override
