@@ -277,10 +277,16 @@ public class PacSimMinimax implements PacAction
         PacCell[][] grid = (PacCell[][]) state;
         PacFace newFace = null;
         PacmanCell pc = PacUtils.findPacman(grid);
+        PacmanCell original = PacUtils.findPacman(grid);
         numFood = Math.max(numFood, PacUtils.findFood((PacCell[][]) state).size());
+
+        // avail directions: use paccell.instanceof(wallcell)
 
         // generate minimax search tree with depth d
         Node root = new Node(0, grid);
+
+        // switch to recursive initialization..?
+
         for (int i = 0; i < initDepth; i++)
         {
             // to add: loop through directions and add valid moves
@@ -291,6 +297,21 @@ public class PacSimMinimax implements PacAction
             }
             else
             {
+                for (PacFace c : PacFace.values())
+                {
+                    PacmanCell currentpc = PacUtils.findPacman(state);
+                    PacCell neighbor = PacUtils.neighbor(c, currentpc, state);
+
+                    // might have to add GhostCell if evaluation function doesn't steer Pacman away well enough
+                    if (!(neighbor instanceof WallCell) || !(neighbor instanceof HouseCell))
+                    {
+                        if (depth % 2 == 0)
+                        {
+                            // initialize value to Double.MIN_VALUE
+                            root.addChild(Double.MIN_VALUE, state);
+                        }
+                    }
+                }
                 // replace with that node's state
                 Node newNode = new Node(0, grid);
             }
