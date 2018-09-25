@@ -28,6 +28,13 @@ public class Node
         //this.type = type;
     }
 
+    public Node(Node copy)
+    {
+        this.children = copy.getChildren();
+        this.state = copy.state;
+        this.value = copy.value;
+    }
+
     public void addChild(Node child)
     {
         children.add(child);
@@ -228,6 +235,12 @@ public class PacSimMinimax implements PacAction
 
             for (Node child : node.getChildren())
             {
+                if (child.getValue() > value)
+                {
+                    value = child.getValue();
+                    maxNode = new Node(child);
+                }
+
                 maxNode.setValue(Math.max(value, minimax(child, depth - 1, false).getValue()));
             }
 
@@ -241,12 +254,15 @@ public class PacSimMinimax implements PacAction
             for (Node child : node.getChildren())
             {
                 minNode = minimax(child, depth - 1, true);
+                double value = Double.MAX_VALUE;
 
-                if (minNode.getValue() > value)
+                // check this later
+                if (child.getValue() < value)
                 {
-                    
+                    value = child.getValue();
+                    minNode = new Node(child);
                 }
-                minNode.setValue(Math.max(minNode.getValue(), minimax(child, depth - 1, true).getValue()));
+                // minNode.setValue(Math.max(minNode.getValue(), minimax(child, depth - 1, true).getValue()));
                 
             }
         }
