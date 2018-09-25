@@ -12,6 +12,26 @@ import pacsim.PacUtils;
 import pacsim.PacmanCell;
 import pacsim.PacSim;
 
+// a node of the game state tree
+public class Node
+{
+    private ArrayList<Node> children = null;
+    private int value;
+    private String type;
+
+    public Node(int value, String type)
+    {
+        this.children = new ArrayList<>();
+        this.value = value;
+        this.type = type;
+    }
+
+    public void addChild(Node child)
+    {
+        children.add(child);
+    }
+}
+
 public class PacSimMinimax implements PacAction
 {
 
@@ -171,7 +191,7 @@ public class PacSimMinimax implements PacAction
         numFood = 0;
     }
 
-    public PacFace minimax()
+    public PacFace minimax(PacCell[][] state, int depth)
     {
         PacFace bestFace = null;
 
