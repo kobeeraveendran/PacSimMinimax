@@ -42,6 +42,11 @@ public class Node
     {
         return this.state;
     }
+
+    public String getType()
+    {
+        return this.type;
+    }
 }
 
 public class PacSimMinimax implements PacAction
@@ -214,6 +219,30 @@ public class PacSimMinimax implements PacAction
             return evaluation(node.getState());
         }
 
+        if (node.getType().equals("pacman"))
+        {
+            int value = Integer.MAX_VALUE;
+
+            for (Node child:)
+
+            for (int i = 0; i < node.getChildren().size(); i++)
+            {
+                value = Math.max(value, minimax(node.getChildren().get(i), depth - 1, false));
+            }
+
+            return value;
+        }
+
+        else
+        {
+            int value = Integer.MAX_VALUE;
+
+            for (Node child : node.getChildren())
+            {
+                value = Math.min(value, minimax(child, depth - 1, true));
+            }
+        }
+
         return bestFace;
     }
 
@@ -225,9 +254,7 @@ public class PacSimMinimax implements PacAction
         PacmanCell pc = PacUtils.findPacman(grid);
         numFood = Math.max(numFood, PacUtils.findFood((PacCell[][]) state).size());
 
-        // minimax here
-
-
+        
 
         // TODO: move ghosts (?), move Pacman
 
