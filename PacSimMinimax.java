@@ -271,6 +271,19 @@ public class PacSimMinimax implements PacAction
         return node;
     }
 
+    public PacCell[][] stateCopy(PacCell[][] stateToCopy)
+    {
+        PacCell[][] copy = new PacCell[stateToCopy.length][stateToCopy[0].length];
+
+        for (int i = 0; i < stateToCopy.length; i++)
+        {
+            for (int j = 0; j < stateToCopy[0].length; j++)
+            {
+                copy[i][j] = stateToCopy[i][j];
+            }
+        }
+    }
+
     public Node stateTreeInit(Node root, int depth)
     {
         if (depth == 0)
@@ -280,10 +293,25 @@ public class PacSimMinimax implements PacAction
 
         else
         {
+            PacCell[][] parentState = PacUtils.cloneGrid(root.getState());
+
             if (depth % 2 == 0)
             {
-                root.addChild(stateTreeInit(new Node(Dobule.MAX_VALUE, tempState), depth - 1));
+                for (PacFace c : PacFace.values())
+                {
+                    PacmanCell currentpc = PacUtils.findPacman(parentState);
+                    PacCell neighbor = PacUtils.neighbor(c, currentpc, state);
+
+                    // might have to add GhostCell if evaluation function doesn't steer Pacman away well enough
+                    if (!(neighbor instanceof WallCell) || !(neighbor instanceof HouseCell))
+                    {
+                        PacCell[][] tempState = PacUtils.movePacman(currentPc.getLoc(), neighbor.getLoc(), parentState);
+                        root.addChild(stateTreeInit(new Node(Double.MAX_VALUE, tempState)), depth - 1);
+                    }
+                }
+                
             }
+
             else
             {
                 root.addChild(stateTreeInit(new Node(Double.MIN_VALUE, tempState), depth - 1));
