@@ -314,6 +314,19 @@ public class PacSimMinimax implements PacAction
 
             else
             {
+                for (PacFace c : PacFace.values())
+                {
+                    for (Point p : PacUtils.findGhosts(parentState))
+                    {
+                        PacCell neighbor = PacUtils.neighbor(c, new PacCell(p.x, p.y), parentState);
+
+                        if (!(neighbor instanceof WallCell))
+                        {
+                            PacCell[][] tempState = PacUtils.moveGhost(p, neighbor.getLoc(), parentState);
+                            root.addChild(stateTreeInit(new Node(Double.MIN_VALUE, tempState), depth - 1));
+                        }
+                    }
+                }
                 root.addChild(stateTreeInit(new Node(Double.MIN_VALUE, tempState), depth - 1));
             }
         }
