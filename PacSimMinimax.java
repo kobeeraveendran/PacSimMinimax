@@ -306,7 +306,7 @@ public class PacSimMinimax implements PacAction
                     if (!(neighbor instanceof WallCell) || !(neighbor instanceof HouseCell))
                     {
                         PacCell[][] tempState = PacUtils.movePacman(currentPc.getLoc(), neighbor.getLoc(), parentState);
-                        root.addChild(stateTreeInit(new Node(Double.MAX_VALUE, tempState)), depth - 1);
+                        root.addChild(stateTreeInit(new Node(Double.MAX_VALUE, tempState), depth - 1);
                     }
                 }
                 
@@ -346,46 +346,6 @@ public class PacSimMinimax implements PacAction
 
         // generate minimax search tree with depth d
         Node root = new Node(Double.MIN_VALUE, grid);
-
-        // switch to recursive initialization..?
-
-        for (int i = 1; i < initDepth; i++)
-        {
-            
-        }
-
-        for (int i = 0; i < initDepth; i++)
-        {
-            // to add: loop through directions and add valid moves
-            if (i == initDepth)
-            {
-                // replace with that node's state
-                Node newNode = new Node(evaluation(state), state);
-            }
-            else
-            {
-                for (PacFace c : PacFace.values())
-                {
-                    PacmanCell currentpc = PacUtils.findPacman(state);
-                    PacCell neighbor = PacUtils.neighbor(c, currentpc, state);
-
-                    // might have to add GhostCell if evaluation function doesn't steer Pacman away well enough
-                    if (!(neighbor instanceof WallCell) || !(neighbor instanceof HouseCell))
-                    {
-                        if (depth % 2 == 0)
-                        {
-                            // initialize value to Double.MIN_VALUE
-                            root.addChild(new Node(Double.MIN_VALUE, state));
-                        }
-                    }
-                }
-                // replace with that node's state
-                Node newNode = new Node(0, grid);
-            }
-            Node newNode = new Node(0, grid);
-
-
-        }
 
         // once optimal state is found, use direction() to create a pacface
 
