@@ -178,6 +178,7 @@ public class PacSimMinimax implements PacAction
     public PacSimMinimax(int depth, String fname, int te, int gran, int max)
     {
         PacSim sim = new PacSim(fname, te, gran, max);
+        initDepth = depth;
         sim.init(this);
     }
 
@@ -271,19 +272,6 @@ public class PacSimMinimax implements PacAction
         return node;
     }
 
-    public PacCell[][] stateCopy(PacCell[][] stateToCopy)
-    {
-        PacCell[][] copy = new PacCell[stateToCopy.length][stateToCopy[0].length];
-
-        for (int i = 0; i < stateToCopy.length; i++)
-        {
-            for (int j = 0; j < stateToCopy[0].length; j++)
-            {
-                copy[i][j] = stateToCopy[i][j];
-            }
-        }
-    }
-
     public Node stateTreeInit(Node root, int depth)
     {
         if (depth == 0)
@@ -346,6 +334,10 @@ public class PacSimMinimax implements PacAction
 
         // generate minimax search tree with depth d
         Node root = new Node(Double.MIN_VALUE, grid);
+        Node tree = stateTreeInit(root, initDepth);
+
+        // perform minimax on generated tree
+        Node optimalNode = minimax(tree, initDepth, true);
 
         // once optimal state is found, use direction() to create a pacface
 
