@@ -324,8 +324,7 @@ public class PacSimMinimax implements PacAction
     public PacFace action(Object state)
     {
         PacCell[][] grid = (PacCell[][]) state;
-        PacCell[][] tempState;
-        PacFace newFace = null;
+        PacFace newFace;
         PacmanCell pc = PacUtils.findPacman(grid);
         PacmanCell original = PacUtils.findPacman(grid);
         numFood = Math.max(numFood, PacUtils.findFood((PacCell[][]) state).size());
@@ -340,6 +339,7 @@ public class PacSimMinimax implements PacAction
         Node optimalNode = minimax(tree, initDepth, true);
 
         // once optimal state is found, use direction() to create a pacface
+        newFace = PacUtils.direction(pc.getLoc(), PacUtils.findPacman(optimalNode.getState()).getLoc());
 
         numMoves++;
         
