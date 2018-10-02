@@ -50,6 +50,11 @@ class Node
         return this.state;
     }
 
+    public void setState(PacCell[][] newState)
+    {
+        this.state = PacUtils.cloneGrid(newState);
+    }
+
     public double getValue()
     {
         return this.value;
@@ -146,11 +151,11 @@ public class PacSimMinimax implements PacAction
 
         PacmanCell pc = PacUtils.findPacman(state);
 
-        // Pacman should be maximize distance from ghosts...
+        // Pacman should maximize distance from ghosts...
         List<Point> allGhosts = PacUtils.findGhosts(state);
         Point nearestGhost = null;
         Point otherGhost = null;
-
+        
         for(int i = 0; i < allGhosts.size(); i++)
         {
             int currDist = PacUtils.manhattanDistance(allGhosts.get(i), pc.getLoc());
@@ -162,7 +167,7 @@ public class PacSimMinimax implements PacAction
                 nearestGhost = allGhosts.get(i);
             }
         }
-
+        
         // ... while minimizing the distance to food (and minimizing the number of food cells left)
         Point nearestGoody = PacUtils.nearestGoody(pc.getLoc(), state);
         int foodDist = PacUtils.manhattanDistance(pc.getLoc(), nearestGoody);
@@ -273,11 +278,15 @@ public class PacSimMinimax implements PacAction
         }
     }
 
+    // draw possible tree to manage states
     public Node stateTreeInit(Node root, int depth)
     {
         if (depth == 0)
         {
-            root.addChild(new Node(evaluation(root.getState()), root.getState()));
+            //root.addChild(new Node(evaluation(root.getState()), root.getState()));
+            //root.setValue(evaluation(root.getState()));
+            Node child = new Node(evaluation(root.getState()), root.getState());
+            return child;
         }
 
         else
@@ -295,10 +304,12 @@ public class PacSimMinimax implements PacAction
                     if (!(neighbor instanceof pacsim.WallCell) || !(neighbor instanceof pacsim.HouseCell))
                     {
                         PacCell[][] tempState = PacUtils.movePacman(currentpc.getLoc(), neighbor.getLoc(), parentState);
-                        root.addChild(stateTreeInit(new Node(Double.MAX_VALUE, tempState), depth - 1));
+                        Node child = stateTreeInit(new Node(Double.MAX_VALUE, tempState), depth - 1);
+                        root.addChild(child);
+                        //root.addChild(stateTreeInit(new Node(Double.MAX_VALUE, tempState), depth - 1));
                     }
                 }
-                
+                return root;                
             }
 
             else
@@ -312,15 +323,16 @@ public class PacSimMinimax implements PacAction
                         if (!(neighbor instanceof pacsim.WallCell))
                         {
                             PacCell[][] tempState = PacUtils.moveGhost(p, neighbor.getLoc(), parentState);
-                            root.addChild(stateTreeInit(new Node(Double.MIN_VALUE, tempState), depth - 1));
+                            Node child = stateTreeInit(new Node(Double.MIN_VALUE, tempState), depth - 1);
+                            root.addChild(child);
+                            //root.addChild(stateTreeInit(new Node(Double.MIN_VALUE, tempState), depth - 1));
                         }
                     }
                 }
                 //root.addChild(stateTreeInit(new Node(Double.MIN_VALUE, tempState), depth - 1));
+                return root;
             }
         }
-
-        return root;
     }
 
     @Override
