@@ -151,6 +151,20 @@ public class PacSimMinimax implements PacAction
 
         PacmanCell pc = PacUtils.findPacman(state);
 
+        
+        if (pc == null)
+        {
+
+            for (int i = 0; i < state.length; i++)
+            {
+                for (int j = 0; j < state[0].length; j++)
+                {
+                    System.out.print("(" + state[i][j].getX() + "," + state[i][j].getY() + ") [" + state[i][j] + "] ");
+                }
+                System.out.println();
+            }
+        }
+        
         // Pacman should maximize distance from ghosts...
         List<Point> allGhosts = PacUtils.findGhosts(state);
         Point nearestGhost = null;
@@ -344,7 +358,18 @@ public class PacSimMinimax implements PacAction
         PacmanCell original = PacUtils.findPacman(grid);
         numFood = Math.max(numFood, PacUtils.findFood((PacCell[][]) state).size());
 
-        // avail directions: use paccell.instanceof(wallcell)
+        System.out.println("PACMAN CURRENT LOCATION: (" + pc.getX() + "," + pc.getY() + ")");
+
+        for (int i = 0; i < grid.length; i++)
+        {
+            for (int j = 0; j < grid[0].length; j++)
+            {
+                System.out.print("(" + grid[i][j].getX() + "," + grid[i][j].getY() + ") [" + grid[i][j] + "] ");
+            }
+            System.out.println();
+        }
+
+        System.out.println("\n\n\n\n\n");
 
         // generate minimax search tree with depth d
         Node root = new Node(Double.MIN_VALUE, grid);
