@@ -305,14 +305,16 @@ public class PacSimMinimax implements PacAction
 
         else
         {
-            PacCell[][] parentState = PacUtils.cloneGrid(root.getState());
+            // may have to try making my own function instead
+            //PacCell[][] parentState = PacUtils.cloneGrid(root.getState());
+            PacCell[][] parentState = root.getState();
 
-            if (depth % 2 == 0)
+            if (depth % 2 != 0)
             {
                 for (PacFace c : PacFace.values())
                 {
                     PacmanCell currentpc = PacUtils.findPacman(parentState);
-                    PacCell neighbor = PacUtils.neighbor(c, currentpc, root.getState());
+                    PacCell neighbor = PacUtils.neighbor(c, currentpc, parentState);
 
                     // might have to add GhostCell if evaluation function doesn't steer Pacman away well enough
                     if (!(neighbor instanceof pacsim.WallCell) || !(neighbor instanceof pacsim.HouseCell))
