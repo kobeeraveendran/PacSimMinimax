@@ -187,7 +187,6 @@ public class PacSimMinimax implements PacAction
         int foodDist = PacUtils.manhattanDistance(pc.getLoc(), nearestGoody);
         int remainingFood = PacUtils.findFood(state).size();
 
-
         // remember to add other sigmoided costs
         leafScore = weightFactor(ghostDist, boardManhattanDistance, "ghostDist") + weightFactor(foodDist, remainingFood, "foodDist") + weightFactor(remainingFood, numFood, "remainingFood");
 
@@ -265,6 +264,13 @@ public class PacSimMinimax implements PacAction
                 }
 
                 //maxNode.setValue(Math.max(value, minimax(child, depth - 1, false).getValue()));
+            }
+
+            if (depth == 2)
+            {
+                PacmanCell pc = PacUtils.findPacman(maxNode.getState());
+
+                System.out.println("(" + pc.getLoc().getX() + "," + pc.getLoc().getY() + ") ");
             }
 
             return maxNode;
@@ -360,8 +366,9 @@ public class PacSimMinimax implements PacAction
         PacmanCell original = PacUtils.findPacman(grid);
         numFood = Math.max(numFood, PacUtils.findFood((PacCell[][]) state).size());
 
-        System.out.println("PACMAN CURRENT LOCATION: (" + pc.getX() + "," + pc.getY() + ")");
+        //System.out.println("PACMAN CURRENT LOCATION: (" + pc.getX() + "," + pc.getY() + ")");
 
+        
         for (int i = 0; i < grid.length; i++)
         {
             for (int j = 0; j < grid[0].length; j++)
@@ -370,7 +377,7 @@ public class PacSimMinimax implements PacAction
             }
             System.out.println();
         }
-
+        
         System.out.println("\n\n\n\n\n");
 
         // generate minimax search tree with depth d
@@ -384,6 +391,8 @@ public class PacSimMinimax implements PacAction
         newFace = PacUtils.direction(pc.getLoc(), PacUtils.findPacman(optimalNode.getState()).getLoc());
 
         numMoves++;
+
+        System.out.println("FACE VALUE: " + newFace);
         
         return newFace;
     }
