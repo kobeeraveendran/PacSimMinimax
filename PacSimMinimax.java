@@ -75,6 +75,7 @@ public class PacSimMinimax implements PacAction
     int numMoves;
     int boardManhattanDistance;
     int initDepth;
+    boolean pacmanTurn;
 
 
     /*             ******************** EXPLANATION OF EVALUATION FUNCTION ********************
@@ -147,6 +148,7 @@ public class PacSimMinimax implements PacAction
     // current number of moves (maybe), score so far
     public double evaluation(PacCell[][] state)
     {
+        /*
         double leafScore;
         int ghostDist = Integer.MAX_VALUE;
         boardManhattanDistance = Math.max(state.length, state[0].length);
@@ -188,11 +190,11 @@ public class PacSimMinimax implements PacAction
         Point nearestGoody = PacUtils.nearestGoody(pc.getLoc(), state);
         int foodDist = PacUtils.manhattanDistance(pc.getLoc(), nearestGoody);
         int remainingFood = PacUtils.findFood(state).size();
-
+        
         // remember to add other sigmoided costs
         leafScore = weightFactor(ghostDist, boardManhattanDistance, "ghostDist") + weightFactor(foodDist, remainingFood, "foodDist") + weightFactor(remainingFood, numFood, "remainingFood");
-
-        return leafScore;
+        */
+        return 10.0;
     }
 
     public PacSimMinimax(int depth, String fname, int te, int gran, int max)
@@ -240,6 +242,7 @@ public class PacSimMinimax implements PacAction
     {
         numMoves = 0;
         numFood = 0;
+        pacmanTurn = true;
     }
 
     public Node minimax(Node node, int depth, boolean maximizingPlayer)
@@ -268,13 +271,6 @@ public class PacSimMinimax implements PacAction
                 //maxNode.setValue(Math.max(value, minimax(child, depth - 1, false).getValue()));
             }
 
-            if (depth == 2)
-            {
-                PacmanCell pc = PacUtils.findPacman(maxNode.getState());
-
-                //System.out.println("(" + pc.getLoc().getX() + "," + pc.getLoc().getY() + ") ");
-            }
-
             return maxNode;
         }
 
@@ -301,12 +297,14 @@ public class PacSimMinimax implements PacAction
     }
 
     // draw possible tree to manage states
+    // turn = true: pacman; false: ghosts
     public Node stateTreeInit(Node root, int depth)
     {
         if (depth == 0)
         {
             //root.addChild(new Node(evaluation(root.getState()), root.getState()));
             //root.setValue(evaluation(root.getState()));
+
             Node child = new Node(evaluation(root.getState()), root.getState());
             return child;
         }
@@ -317,11 +315,12 @@ public class PacSimMinimax implements PacAction
             //PacCell[][] parentState = PacUtils.cloneGrid(root.getState());
             PacCell[][] parentState = root.getState();
 
-            if (depth % 2 != 0)
+            if (pacmanTurn)
             {
                 for (PacFace c : PacFace.values())
                 {
                     PacmanCell currentpc = PacUtils.findPacman(parentState);
+
                     PacCell neighbor = PacUtils.neighbor(c, currentpc, parentState);
 
                     //System.out.println("CURRENT LOC: (" + currentpc.getX() + "," + currentpc.getY() + ")");
@@ -355,6 +354,9 @@ public class PacSimMinimax implements PacAction
                         root.addChild(child);
                     }
                 }
+                
+                pacmanTurn = false;
+
                 return root; 
             }
 
@@ -392,6 +394,9 @@ public class PacSimMinimax implements PacAction
                         }
                     }
                 }
+
+                pacmanTurn = true;
+
                 //root.addChild(stateTreeInit(new Node(Double.MIN_VALUE, tempState), depth - 1));
                 return root;
             }
@@ -410,7 +415,7 @@ public class PacSimMinimax implements PacAction
 
         //System.out.println("PACMAN CURRENT LOCATION: (" + pc.getX() + "," + pc.getY() + ")");
 
-        /*
+        
         System.out.println("BEFORE:\n");
 
         for (int i = 0; i < grid.length; i++)
@@ -423,7 +428,7 @@ public class PacSimMinimax implements PacAction
         }
         
         System.out.println("\n\n\n\n\n");
-        */
+        
         // generate minimax search tree with depth d
         Node root = new Node(Double.MIN_VALUE, grid);
         Node tree = stateTreeInit(root, initDepth);
@@ -431,7 +436,7 @@ public class PacSimMinimax implements PacAction
         // perform minimax on generated tree
         Node optimalNode = minimax(tree, initDepth, true);
         
-        /*
+        
         System.out.println("AFTER: \n");
 
         for (int i = 0; i < optimalNode.getState().length; i++)
@@ -442,7 +447,7 @@ public class PacSimMinimax implements PacAction
             }
             System.out.println();
         }
-        */
+        
         // once optimal state is found, use direction() to create a pacface
         newFace = PacUtils.direction(pc.getLoc(), PacUtils.findPacman(optimalNode.getState()).getLoc());
 
