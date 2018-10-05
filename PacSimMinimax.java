@@ -148,17 +148,18 @@ public class PacSimMinimax implements PacAction
     // current number of moves (maybe), score so far
     public double evaluation(PacCell[][] state)
     {
-        /*
+        
         double leafScore;
         int ghostDist = Integer.MAX_VALUE;
         boardManhattanDistance = Math.max(state.length, state[0].length);
 
         PacmanCell pc = PacUtils.findPacman(state);
-
         
         if (pc == null)
         {
+            System.out.println("\n\nPC NULL\n\n");
 
+            /*
             for (int i = 0; i < state.length; i++)
             {
                 for (int j = 0; j < state[0].length; j++)
@@ -167,6 +168,7 @@ public class PacSimMinimax implements PacAction
                 }
                 System.out.println();
             }
+            */
         }
         
         // Pacman should maximize distance from ghosts...
@@ -193,8 +195,8 @@ public class PacSimMinimax implements PacAction
         
         // remember to add other sigmoided costs
         leafScore = weightFactor(ghostDist, boardManhattanDistance, "ghostDist") + weightFactor(foodDist, remainingFood, "foodDist") + weightFactor(remainingFood, numFood, "remainingFood");
-        */
-        return 10.0;
+        
+        return 5.0;
     }
 
     public PacSimMinimax(int depth, String fname, int te, int gran, int max)
