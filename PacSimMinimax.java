@@ -7,6 +7,8 @@ import java.util.List;
 import pacsim.BFSPath;
 import pacsim.PacAction;
 import pacsim.PacCell;
+import pacsim.WallCell;
+import pacsim.HouseCell;
 import pacsim.PacFace;
 import pacsim.PacUtils;
 import pacsim.PacmanCell;
@@ -270,7 +272,7 @@ public class PacSimMinimax implements PacAction
             {
                 PacmanCell pc = PacUtils.findPacman(maxNode.getState());
 
-                System.out.println("(" + pc.getLoc().getX() + "," + pc.getLoc().getY() + ") ");
+                //System.out.println("(" + pc.getLoc().getX() + "," + pc.getLoc().getY() + ") ");
             }
 
             return maxNode;
@@ -322,32 +324,71 @@ public class PacSimMinimax implements PacAction
                     PacmanCell currentpc = PacUtils.findPacman(parentState);
                     PacCell neighbor = PacUtils.neighbor(c, currentpc, parentState);
 
-                    // might have to add GhostCell if evaluation function doesn't steer Pacman away well enough
-                    if (!(neighbor instanceof pacsim.WallCell) || !(neighbor instanceof pacsim.HouseCell))
+                    //System.out.println("CURRENT LOC: (" + currentpc.getX() + "," + currentpc.getY() + ")");
+                    
+                    /*
+                    if (neighbor instanceof WallCell || neighbor instanceof HouseCell)
                     {
+                        System.out.println( "WALL DETECTED");
+                    }
+                    */
+                    // might have to add GhostCell if evaluation function doesn't steer Pacman away well enough
+                    /*
+                    if (!(neighbor instanceof WallCell) || !(neighbor instanceof HouseCell))
+                    {
+                        System.out.println("NEIGHBOR FACING " + c + ": (" + neighbor.getX() + "," + neighbor.getY() + ")");
                         PacCell[][] tempState = PacUtils.movePacman(currentpc.getLoc(), neighbor.getLoc(), parentState);
                         Node child = stateTreeInit(new Node(Double.MAX_VALUE, tempState), depth - 1);
                         root.addChild(child);
                         //root.addChild(stateTreeInit(new Node(Double.MAX_VALUE, tempState), depth - 1));
                     }
+                    */
+
+                    if (neighbor instanceof WallCell || neighbor instanceof HouseCell)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        PacCell[][] tempState = PacUtils.movePacman(currentpc.getLoc(), neighbor.getLoc(), parentState);
+                        Node child = stateTreeInit(new Node(Double.MAX_VALUE, tempState), depth - 1);
+                        root.addChild(child);
+                    }
                 }
-                return root;                
+                return root; 
             }
 
             else
             {
+                /*
                 for (PacFace c : PacFace.values())
                 {
                     for (Point p : PacUtils.findGhosts(parentState))
                     {
                         PacCell neighbor = PacUtils.neighbor(c, new PacCell(p.x, p.y), parentState);
 
-                        if (!(neighbor instanceof pacsim.WallCell))
+                        if (!(neighbor instanceof WallCell))
                         {
                             PacCell[][] tempState = PacUtils.moveGhost(p, neighbor.getLoc(), parentState);
                             Node child = stateTreeInit(new Node(Double.MIN_VALUE, tempState), depth - 1);
                             root.addChild(child);
                             //root.addChild(stateTreeInit(new Node(Double.MIN_VALUE, tempState), depth - 1));
+                        }
+                    }
+                }
+                */
+
+                for (Point p : PacUtils.findGhosts(parentState))
+                {
+                    for (PacFace c : PacFace.values())
+                    {
+                        PacCell neighbor = PacUtils.neighbor(c, new PacCell(p.x, p.y), parentState);
+
+                        if (!(neighbor instanceof WallCell))
+                        {
+                            PacCell[][] tempState = PacUtils.moveGhost(p, neighbor.getLoc(), parentState);
+                            Node child = stateTreeInit(new Node(Double.MIN_VALUE, tempState), depth - 1);
+                            root.addChild(child);
                         }
                     }
                 }
@@ -361,38 +402,51 @@ public class PacSimMinimax implements PacAction
     public PacFace action(Object state)
     {
         PacCell[][] grid = (PacCell[][]) state;
+        PacCell[][] gridOrig = PacUtils.cloneGrid(grid);
         PacFace newFace;
-        PacmanCell pc = PacUtils.findPacman(grid);
+        PacmanCell pc = PacUtils.findPacman(gridOrig);
         PacmanCell original = PacUtils.findPacman(grid);
         numFood = Math.max(numFood, PacUtils.findFood((PacCell[][]) state).size());
 
         //System.out.println("PACMAN CURRENT LOCATION: (" + pc.getX() + "," + pc.getY() + ")");
 
-        
+        /*
+        System.out.println("BEFORE:\n");
+
         for (int i = 0; i < grid.length; i++)
         {
             for (int j = 0; j < grid[0].length; j++)
             {
-                System.out.print("(" + grid[i][j].getX() + "," + grid[i][j].getY() + ") [" + grid[i][j] + "] ");
+                System.out.print("(" + gridOrig[i][j].getX() + "," + gridOrig[i][j].getY() + ") [" + gridOrig[i][j] + "] ");
             }
             System.out.println();
         }
         
         System.out.println("\n\n\n\n\n");
-
+        */
         // generate minimax search tree with depth d
         Node root = new Node(Double.MIN_VALUE, grid);
         Node tree = stateTreeInit(root, initDepth);
 
         // perform minimax on generated tree
         Node optimalNode = minimax(tree, initDepth, true);
+        
+        /*
+        System.out.println("AFTER: \n");
 
+        for (int i = 0; i < optimalNode.getState().length; i++)
+        {
+            for (int j = 0; j < optimalNode.getState()[0].length; j++)
+            {
+                System.out.print("(" +  optimalNode.getState()[i][j].getX() + "," + optimalNode.getState()[i][j].getY() + ") [" + optimalNode.getState()[i][j] + "] ");
+            }
+            System.out.println();
+        }
+        */
         // once optimal state is found, use direction() to create a pacface
         newFace = PacUtils.direction(pc.getLoc(), PacUtils.findPacman(optimalNode.getState()).getLoc());
 
         numMoves++;
-
-        System.out.println("FACE VALUE: " + newFace);
         
         return newFace;
     }
