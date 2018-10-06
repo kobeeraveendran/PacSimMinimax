@@ -69,7 +69,7 @@ class Node
 
 public class PacSimMinimax implements PacAction
 {
-    int numFood;
+    //int numFood;
     int numMoves;
     int initDepth;
     boolean pacmanTurn;
@@ -111,20 +111,22 @@ public class PacSimMinimax implements PacAction
         PacmanCell pc = PacUtils.findPacman(state);
 
         int distNearestFood = PacUtils.manhattanDistance(pc.getLoc(), PacUtils.nearestFood(pc.getLoc(), state));
-        int distNearestGhost = PacUtils.manhattanDistance(pc.getLoc(), PacUtils.nearestGhost(pc.getLoc(), state));
+        int distNearestGhost = PacUtils.manhattanDistance(pc.getLoc(), PacUtils.nearestGhost(pc.getLoc(), state).getLoc());
 
         // boolean isFood = PacUtils.goody(pc.getLoc().getX(), pc.getLoc().getY(), state)
 
         if (distNearestFood < distNearestGhost)
         {
-            leafScore = leafScore * 2;
+            leafScore = leafScore * 100;
         }
 
         for (Point p : PacUtils.findFood(state))
         {
             int distToFood = PacUtils.manhattanDistance(pc.getLoc(), p);
-            leafScore = leafScore - 0.5 * distToFood;
+            leafScore = leafScore - 0.01 * distToFood;
         }
+
+        leafScore += (numFood - PacUtils.findFood().size(state));
 
         return leafScore;
     }
@@ -141,6 +143,64 @@ public class PacSimMinimax implements PacAction
     {
         String fname = args[0];
         int depth = Integer.parseInt(args[1]);
+
+        int te = 0;
+        int gr = 0;
+        int ml = 0;
+
+        if (args.length == 5)
+        {
+            te = Integer.parseInt(args[2]);
+            gr = Integer.parseInt(args[3]);
+            ml = Integer.parseInt(args[4]);
+        }
+
+        new PacSimMinimax(depth, fname, te, gr, ml);
+
+        System.out.println("\nAdversarial Search using Minimax by Kobee Raveendran:");
+
+        System.out.println("\n   Game board : " + fname);
+
+        System.out.println("\n   Search depth : " + depth + "\n");
+
+        if (te > 0)
+        {
+            System.out.println("   Preliminary runs : " + te);
+            System.out.println("   Granularity      : " + gr);
+            System.out.println("   Max move limit   : " + ml);
+            System.out.println("\n\nPrelimiminary run results : ");
+        }
+    }
+
+    @Override
+    public void init()
+    {
+        numMoves = 0;
+        //numFood = 0;
+        pacmanTurn = true;
     }
     
+    public Node minimax(Node node, int depth, boolean maximizingPlayer)
+    {
+        if (depth == 0 || node.getChildren() == null)
+        {
+            return node;
+        }
+
+        return node;
+    }
+
+    @Override
+    public PacFace action(Object state)
+    {
+        PacCell[][] grid = (PacCell[][]) state;
+        PacFace newFace = PacFace.valueOf("E");
+
+        System.out.println("EVAL AT CURR STATE: " + evaluation(grid));
+
+        PacmanCell pc = PacUtils.findPacman(grid);
+
+        return newFace;
+    }
+
 }
