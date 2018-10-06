@@ -73,6 +73,7 @@ public class PacSimMinimax implements PacAction
     int numMoves;
     int initDepth;
     boolean pacmanTurn;
+    PacFace bestFace;
 
     /*             ******************** EXPLANATION OF EVALUATION FUNCTION ********************
      *
@@ -180,44 +181,152 @@ public class PacSimMinimax implements PacAction
         pacmanTurn = true;
     }
 
-    public PacCell[][] minimax(PacCell[][] parentState, int depth, boolean maximizingPlayer)
+    
+    public double minimax(PacCell[][] parentState, int depth, boolean maximizingPlayer)
     {
         if (depth == 0)
         {
-            return parentState;
+            return evaluation(parentState);
         }
 
-        else if (maximizingPlayer)
+        if (maximizingPlayer)
         {
             Double maxVal = Double.MIN_VALUE;
 
             for (PacFace c : PacFace.values())
             {
                 PacmanCell currentpc = PacUtils.findPacman(parentState);
+                PacCell neighbor = PacUtils.neighbor(c, currentpc, parentState);
+
+                if (neighbor instanceof WallCell || neighbor instanceof HouseCell)
+                {
+                    continue;
+                }
+                else
+                {
+                    PacCell[][] tempState = PacUtils.movePacman(currentpc.getLoc(), neighbor.getLoc(), parentState);
+                    double newVal = minimax(tempState, depth - 1, false);
+
+                    if (newVal > maxVal)
+                    {
+                        maxVal = newVal;
+                        bestFace = c;
+                    }
+                }
             }
+
+            return maxVal;
+        }
+
+        else
+        {
+            double minVal = Double.MAX_VALUE;
+
+            for (Point p : PacUtils.findGhosts(parentState))
         }
     }
-
+    
+    /*
     public Node stateTreeInit(Node root, int depth)
     {
         if (depth == 0)
         {
             Node child = new Node(evaluation(root.getState()), root.getState());
+            return child;
+        }
+
+        else
+        {
+            PacCell[][] parentState = root.getState();
+
+            if (pacmanTurn)
+            {
+                for (PacFace c : PacFace.values())
+                {
+                    PacmanCell currentpc = PacUtils.findPacman(parentState);
+
+                    PacCell neighbor = PacUtils.neighbor(c, currentpc, parentState);
+
+                    if (neighbor instanceof WallCell || neighbor instanceof HouseCell)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        PacCell[][] tempState = PacUtils.movePacman(currentpc.getLoc(), neighbor.getLoc(), parentState);
+                        Node child = stateTreeInit(new Node(Double.MAX_VALUE, tempState), depth - 1);
+                        root.addChild(child);
+                    }
+                }
+
+                pacmanTurn = false;
+
+                return root;
+            }
+
+            else
+            {
+                for (Point p : PacUtils.findGhosts(parentState))
+                {
+                    for (PacFace c : PacFace.values())
+                    {
+                        PacCell neighbor = PacUtils.neighbor(c, new PacCell(p.x, p.y), parentState);
+
+                        if (neighbor instanceof WallCell)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            PacCell[][] tempState = PacUtils.moveGhost(p, neighbor.getLoc(), parentState);
+                            Node child = stateTreeInit(new Node(Double.MIN_VALUE, tempState), depth - 1);
+                            //root.addChild(child);
+                        }
+                    }
+                }
+
+                pacmanTurn = true;
+
+                return root;
+            }
         }
     }
+    */
 
     @Override
     public PacFace action(Object state)
     {
         PacCell[][] grid = (PacCell[][]) state;
-        PacFace newFace = PacFace.valueOf("E");
+        //PacFace bestFace = PacFace.valueOf("E");
+        bestFace = null;
         numFood = Math.max(numFood, PacUtils.findFood((PacCell[][]) state).size());
 
-        System.out.println("EVAL AT CURR STATE: " + evaluation(grid));
+        //System.out.println("EVAL AT CURR STATE: " + evaluation(grid));
 
         PacmanCell pc = PacUtils.findPacman(grid);
 
-        return newFace;
+        Node root = new Node(Double.MIN_VALUE, grid);
+        Node tree = stateTreeInit(root, initDepth);
+
+        System.out.println("Curr node children size: " + tree.getChildren().size());
+
+        /*
+        for (int i = 0; i < tree.getChildren().size(); i++)
+        {
+            System.out.println("CHILD " + i + ":\n");
+            
+            for (int j = 0; j < tree.getChildren().get(i).getState().length; j++)
+            {
+                for (int k = 0; k < tree.getChildren().get(i).getState()[0].length; k++)
+                {
+                    System.out.print(tree.getChildren().get(i).getState()[j][k]);
+                }
+                System.out.println();
+            }
+        }
+        */
+
+        return bestFace;
     }
 
 }
