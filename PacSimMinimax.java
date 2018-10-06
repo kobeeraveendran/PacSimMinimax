@@ -69,7 +69,7 @@ class Node
 
 public class PacSimMinimax implements PacAction
 {
-    //int numFood;
+    int numFood;
     int numMoves;
     int initDepth;
     boolean pacmanTurn;
@@ -126,7 +126,7 @@ public class PacSimMinimax implements PacAction
             leafScore = leafScore - 0.01 * distToFood;
         }
 
-        leafScore += (numFood - PacUtils.findFood().size(state));
+        leafScore += (numFood - PacUtils.findFood(state).size());
 
         return leafScore;
     }
@@ -176,18 +176,34 @@ public class PacSimMinimax implements PacAction
     public void init()
     {
         numMoves = 0;
-        //numFood = 0;
+        numFood = 0;
         pacmanTurn = true;
     }
-    
-    public Node minimax(Node node, int depth, boolean maximizingPlayer)
+
+    public PacCell[][] minimax(PacCell[][] parentState, int depth, boolean maximizingPlayer)
     {
-        if (depth == 0 || node.getChildren() == null)
+        if (depth == 0)
         {
-            return node;
+            return parentState;
         }
 
-        return node;
+        else if (maximizingPlayer)
+        {
+            Double maxVal = Double.MIN_VALUE;
+
+            for (PacFace c : PacFace.values())
+            {
+                PacmanCell currentpc = PacUtils.findPacman(parentState);
+            }
+        }
+    }
+
+    public Node stateTreeInit(Node root, int depth)
+    {
+        if (depth == 0)
+        {
+            Node child = new Node(evaluation(root.getState()), root.getState());
+        }
     }
 
     @Override
@@ -195,6 +211,7 @@ public class PacSimMinimax implements PacAction
     {
         PacCell[][] grid = (PacCell[][]) state;
         PacFace newFace = PacFace.valueOf("E");
+        numFood = Math.max(numFood, PacUtils.findFood((PacCell[][]) state).size());
 
         System.out.println("EVAL AT CURR STATE: " + evaluation(grid));
 
