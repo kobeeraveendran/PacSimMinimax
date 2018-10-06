@@ -181,6 +181,18 @@ public class PacSimMinimax implements PacAction
         pacmanTurn = true;
     }
 
+    public void printState(PacCell[][] state)
+    {
+        for (int i = 0; i < state.length; i++)
+        {
+            for (int j = 0; j < state[0].length; j++)
+            {
+                System.out.print("(" + state[i][j].getX() + "," + state[i][j].getY() + ") [" + state[i][j] + "] ");
+            }
+            System.out.println();
+        }
+    }
+
     
     public double minimax(PacCell[][] parentState, int depth, boolean maximizingPlayer)
     {
