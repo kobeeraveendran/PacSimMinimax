@@ -211,6 +211,8 @@ public class PacSimMinimax implements PacAction
                     {
                         maxVal = newVal;
                         bestFace = c;
+
+                        System.out.println("Bestface = " + bestFace);
                     }
                 }
             }
@@ -223,92 +225,48 @@ public class PacSimMinimax implements PacAction
             double minVal = Double.MAX_VALUE;
 
             for (Point p : PacUtils.findGhosts(parentState))
-        }
-    }
-    
-    /*
-    public Node stateTreeInit(Node root, int depth)
-    {
-        if (depth == 0)
-        {
-            Node child = new Node(evaluation(root.getState()), root.getState());
-            return child;
-        }
-
-        else
-        {
-            PacCell[][] parentState = root.getState();
-
-            if (pacmanTurn)
             {
                 for (PacFace c : PacFace.values())
                 {
-                    PacmanCell currentpc = PacUtils.findPacman(parentState);
+                    PacCell neighbor = PacUtils.neighbor(c, new PacCell(p.x, p.y), parentState);
 
-                    PacCell neighbor = PacUtils.neighbor(c, currentpc, parentState);
-
-                    if (neighbor instanceof WallCell || neighbor instanceof HouseCell)
+                    if (neighbor instanceof WallCell)
                     {
                         continue;
                     }
                     else
                     {
-                        PacCell[][] tempState = PacUtils.movePacman(currentpc.getLoc(), neighbor.getLoc(), parentState);
-                        Node child = stateTreeInit(new Node(Double.MAX_VALUE, tempState), depth - 1);
-                        root.addChild(child);
-                    }
-                }
+                        PacCell[][] tempState = PacUtils.moveGhost(p, neighbor.getLoc(), parentState);
+                        double newVal = minimax(tempState, depth - 1, true);
 
-                pacmanTurn = false;
-
-                return root;
-            }
-
-            else
-            {
-                for (Point p : PacUtils.findGhosts(parentState))
-                {
-                    for (PacFace c : PacFace.values())
-                    {
-                        PacCell neighbor = PacUtils.neighbor(c, new PacCell(p.x, p.y), parentState);
-
-                        if (neighbor instanceof WallCell)
+                        if (newVal < minVal)
                         {
-                            continue;
-                        }
-                        else
-                        {
-                            PacCell[][] tempState = PacUtils.moveGhost(p, neighbor.getLoc(), parentState);
-                            Node child = stateTreeInit(new Node(Double.MIN_VALUE, tempState), depth - 1);
-                            //root.addChild(child);
+                            minVal = newVal;
                         }
                     }
                 }
-
-                pacmanTurn = true;
-
-                return root;
             }
+
+            return minVal;
         }
     }
-    */
 
     @Override
     public PacFace action(Object state)
     {
         PacCell[][] grid = (PacCell[][]) state;
         //PacFace bestFace = PacFace.valueOf("E");
-        bestFace = null;
+        bestFace = PacFace.valueOf("E");
         numFood = Math.max(numFood, PacUtils.findFood((PacCell[][]) state).size());
 
         //System.out.println("EVAL AT CURR STATE: " + evaluation(grid));
 
         PacmanCell pc = PacUtils.findPacman(grid);
 
-        Node root = new Node(Double.MIN_VALUE, grid);
-        Node tree = stateTreeInit(root, initDepth);
+        //Node root = new Node(Double.MIN_VALUE, grid);
+        //Node tree = stateTreeInit(root, initDepth);
 
-        System.out.println("Curr node children size: " + tree.getChildren().size());
+        //System.out.println("Curr node children size: " + tree.getChildren().size());
 
         /*
         for (int i = 0; i < tree.getChildren().size(); i++)
@@ -325,6 +283,9 @@ public class PacSimMinimax implements PacAction
             }
         }
         */
+
+        double bestCost = minimax(grid, initDepth, true);
+        numMoves++;
 
         return bestFace;
     }
