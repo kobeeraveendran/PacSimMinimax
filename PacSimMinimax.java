@@ -138,7 +138,7 @@ public class PacSimMinimax implements PacAction
             return win;
         }
 
-        List<Point> food = PacUtils.findFood(parentState);
+        List<Point> foodList = PacUtils.findFood(parentState);
         Point nearestFood = PacUtils.nearestFood(pacman, parentState);
         int distNearestFood;
 
@@ -174,8 +174,10 @@ public class PacSimMinimax implements PacAction
 
         int distToAllFood = 0;
 
-        for (Point f : food)
-            distToAllFood += PacUtils.manhattanDistance(pacman, f);
+        for (Point food : foodList)
+        {
+            distToAllFood += PacUtils.manhattanDistance(pacman, food);
+        }
 
         score = 10.0 * (numFood - remainingFood);
 
