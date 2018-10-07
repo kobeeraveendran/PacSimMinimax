@@ -111,6 +111,24 @@ public class PacSimMinimax implements PacAction
         double leafScore = (double) numMoves;
         PacmanCell pc = PacUtils.findPacman(state);
 
+        /*
+        if (pc != null)
+        {
+            System.out.println("PC: (" + pc.getLoc().getX() + "," + pc.getLoc().getY() + ")\n\n");
+        }
+
+        printState(state);
+        
+        System.out.println("\n\n");
+        */
+
+        // if this state causes pacman to die (he is no longer on the grid)
+        
+        if (pc == null)
+        {
+            return -1000.0;
+        }
+
         int distNearestFood = PacUtils.manhattanDistance(pc.getLoc(), PacUtils.nearestFood(pc.getLoc(), state));
         int distNearestGhost = PacUtils.manhattanDistance(pc.getLoc(), PacUtils.nearestGhost(pc.getLoc(), state).getLoc());
 
@@ -224,7 +242,7 @@ public class PacSimMinimax implements PacAction
                         maxVal = newVal;
                         bestFace = c;
 
-                        System.out.println("Bestface = " + bestFace);
+                        //System.out.println("Bestface = " + bestFace);
                     }
                 }
             }
@@ -275,6 +293,14 @@ public class PacSimMinimax implements PacAction
 
         PacmanCell pc = PacUtils.findPacman(grid);
 
+        /*
+        if (numMoves == 0)
+        {
+            printState(grid);
+        }
+        */
+        
+
         //Node root = new Node(Double.MIN_VALUE, grid);
         //Node tree = stateTreeInit(root, initDepth);
 
@@ -295,8 +321,9 @@ public class PacSimMinimax implements PacAction
             }
         }
         */
-
+        System.out.println("PACMAN CURRENT LOCATION: (" + pc.getLoc().getX() + "," + pc.getLoc().getY() + ")");
         double bestCost = minimax(grid, initDepth, true);
+        //System.out.println("BESTFACE = " + bestFace);
         numMoves++;
 
         return bestFace;
