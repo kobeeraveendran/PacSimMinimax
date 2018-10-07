@@ -74,6 +74,8 @@ public class PacSimMinimax implements PacAction
     int initDepth;
     boolean pacmanTurn;
     PacFace bestFace;
+    static final double loss = -1e7;
+    static final double win = 1e7;
 
     /*             ******************** EXPLANATION OF EVALUATION FUNCTION ********************
      *
@@ -211,7 +213,66 @@ public class PacSimMinimax implements PacAction
         }
     }
 
-    
+    public double minimax(PacCell[][] parentState, int depth, boolean maximizingPlayer, Point pacman, Point inky, Point blinky)
+    {
+        if (depth <= 0)
+        {
+            return evaluation(parentState);
+        }
+
+        if (maximizingPlayer)
+        {
+            double currMax = Double.MIN_VALUE;
+
+            for (PacFace c : PacFace.values())
+            {
+                Point newPacLoc = PacUtils.neighbor(c, pacman, parentState).getLoc();
+                PacCell neighbor = parentState[newPacLoc.x][newPacLoc.y];
+
+                if (!(neighbor instanceof WallCell || neighbor instanceof HouseCell))
+                {
+                    PacCell[][] tempState =  PacUtils.movePacman(pacman, newPacLoc, parentState);
+                    currMax = Math.max(minimax(tempState, depth, false, newPacLoc, inky, blinky), currMax);
+                    bestFace = c;
+                }
+            }
+
+            return currMax;
+        }
+
+        else
+        {
+            double currMin = Double.MAX_VALUE;
+
+            for (PacFace c : PacFace.values())
+            {
+                Point newInkyLoc = PacUtils.neighbor(c, inky, parentState).getLoc();
+                PacCell inkyNeighbor = parentState[newInkyLoc.x][newInkyLoc.y];
+
+                if (!(inkyNeighbor instanceof WallCell))
+                {
+                    for (PacFace d : PacFace.values())
+                    {
+                        Point newBlinkyLoc = PacUtils.neighbor(d, blinky, parentState).getLoc();
+                        PacCell blinkyNeighbor = parentState[newBlinkyLoc.x][newBlinkyLoc.y];
+
+                        if (!(blinkyNeighbor instanceof WallCell))
+                        {
+                            PacCell[][] tempState = PacUtils.moveGhost(inky, newInkyLoc, parentState);
+                            tempState = PacUtils.moveGhost(blinky, newBlinkyLoc, tempState);
+
+                            currMin = Math.min(minimax(tempState, depth - 1, true, pacman, newInkyLoc, newBlinkyLoc), currMin);
+
+                        }
+                    }
+                }
+            }
+
+            return currMin;
+        }
+    }
+
+    /*
     public double minimax(PacCell[][] parentState, int depth, boolean maximizingPlayer)
     {
         if (depth == 0)
@@ -280,6 +341,7 @@ public class PacSimMinimax implements PacAction
             return minVal;
         }
     }
+    */
 
     @Override
     public PacFace action(Object state)
@@ -292,6 +354,7 @@ public class PacSimMinimax implements PacAction
         //System.out.println("EVAL AT CURR STATE: " + evaluation(grid));
 
         PacmanCell pc = PacUtils.findPacman(grid);
+        List<Point> ghostList = PacUtils.findGhosts(grid);
 
         /*
         if (numMoves == 0)
@@ -321,8 +384,9 @@ public class PacSimMinimax implements PacAction
             }
         }
         */
-        System.out.println("PACMAN CURRENT LOCATION: (" + pc.getLoc().getX() + "," + pc.getLoc().getY() + ")");
-        double bestCost = minimax(grid, initDepth, true);
+        //System.out.println("PACMAN CURRENT LOCATION: (" + pc.getLoc().getX() + "," + pc.getLoc().getY() + ")");
+        
+        double bestCost = minimax(grid, initDepth, true, pc.getLoc(), ghostList.get(0), ghostList.get(1));
         //System.out.println("BESTFACE = " + bestFace);
         numMoves++;
 
